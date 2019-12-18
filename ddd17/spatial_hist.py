@@ -32,6 +32,11 @@ def normal2(X):
     m = (X - X.min()) / (X.max() - X.min())
     return m
 
+def binData(ave, event, po, index, t_s):
+    ave[po][0] = (ave[po][0] * (index - 1) + event[2]) / index
+    ave[po][1] = (ave[po][1] * (index - 1) + event[1]) / index
+    #ave[po][2] = (ave[po][2] * (index - 1) + event[0] - t_s) / index
+
 
 if __name__ == '__main__':
     d = h5py.File(filename, 'r')
@@ -39,18 +44,10 @@ if __name__ == '__main__':
     # print(data[2])
     print(data.shape)
     events = np.array(data, dtype=np.int32)
-
-    # plt.imshow(d['/frame'].value[0], cmap='gray')
-    # plt.show()
-
     d.close()
 
-    frame = np.zeros((260, 346), dtype=np.int16)
-    mean = np.zeros((260, 346), dtype=np.float16)
-    sd = np.zeros((260, 346), dtype=np.float16)
-    sphis = np.zeros((260, 346), dtype=np.float16)
-    sphis_ave = np.zeros((21, 3), dtype=np.float16)
-    sphis_cm = np.zeros((21, 3, 3), dtype=np.float16)
+    sphis_ave = np.zeros((2, 3), dtype=np.float16)
+    sphis_cm = np.zeros((2, 3, 3), dtype=np.float16)
 
     p = 1
     ms_i = 0
@@ -59,101 +56,26 @@ if __name__ == '__main__':
 
     ts = events[:, 0]
 
-    while events[ms_i][0] - events[0][0] <= 50000:
-        # if events[ms_i][3] == p:
-        #     indix_p += 1
-        #     sphis_ave[0][0] = (sphis_ave[0][0]*(indix_p-1) + events[ms_i][2] )/indix_p
-        #     sphis_ave[0][1] = (sphis_ave[0][1] * (indix_p - 1) + events[ms_i][1]) / indix_p
-        #     sphis_ave[0][2] = (sphis_ave[0][2] * (indix_p - 1) + events[ms_i][3]) / indix_p
-        # else:
-        #     indix_n += 1
-        #     sphis_ave[1][0] = (sphis_ave[1][0] * (indix_n - 1) + events[ms_i][2]) / indix_n
-        #     sphis_ave[1][1] = (sphis_ave[1][1] * (indix_n - 1) + events[ms_i][1]) / indix_n
-        #     sphis_ave[1][2] = (sphis_ave[1][2] * (indix_n - 1) + events[ms_i][3]) / indix_n
-        frame[events[ms_i][2]][events[ms_i][1]] += 1
+    time_stand = events[0][0]
+    while events[ms_i][0] - time_stand <= 50000:
+        if events[ms_i][3] == p:
+            indix_p += 1
+            binData(sphis_ave, events[ms_i], 1, indix_p, time_stand)
+        else:
+            indix_n += 1
+            binData(sphis_ave, events[ms_i], 0, indix_n, time_stand)
         ms_i += 1
 
-    j = 0
     ts_norm = normal(ts[:ms_i])
-    while events[j][0] - events[0][0] <= 50000:
-        #if events[j][3] == p:
-        mean[events[j][2]][events[j][1]] += ts_norm[j]
-        j += 1
 
-    frame_normalize = normal(frame)
-
-    mean_ = normal(mean)
-    # print(mean)
-
-    frame_reshapa = np.array(frame_normalize).reshape((260, 346))
-
-    sphis = [np.floor((frame_reshapa[i][j] + 1) / 0.1) for i in range(mean.shape[0]) for j in range(mean.shape[1])]
-    sphis = np.array(sphis).reshape((260, 346))
-
-    test_dic = [0] * 21
-    #indix = 0
-    for i in range(260):
-        for j in range(346):
-            #indix += 1
-            bin_number = int(sphis[i][j])
-            test_dic[bin_number] += 1
-            sphis_ave[bin_number][0] = (i + sphis_ave[bin_number][0] * (test_dic[bin_number] - 1)) / test_dic[
-                bin_number]
-            sphis_ave[bin_number][1] = (j + sphis_ave[bin_number][1] * (test_dic[bin_number] - 1)) / test_dic[
-                bin_number]
-            sphis_ave[bin_number][2] = (mean[i][j] + sphis_ave[bin_number][2] * (test_dic[bin_number] - 1)) / test_dic[
-                bin_number]
-    #print(indix)
-
-    for n in range(21):
-        if test_dic[n] != 0 and test_dic[n] != 1:
-            ma_x = []
-            ma_y = []
-            ma_t = []
-            for i in range(260):
-                for j in range(346):
-                    if sphis[i][j] == n:
-                        ma_x.append(i)
-                        ma_y.append(j)
-                        ma_t.append(mean[i][j])
-            X = np.stack((ma_x, ma_y, ma_t), axis=0)
-            result = np.cov(X)
-            sphis_cm[n] = result
-
-    # test_dic = [0] * 21
-    # for es in range(ms_i):
-    #     if events[es][3] == p:
-    #         x, y = events[es][2], events[es][1]
-    #         bin_number = int(sphis[x][y])
-    #         test_dic[bin_number] += 1
-    #         sphis_ave[bin_number][2] = (events[es][0] + sphis_ave[bin_number][2] * (test_dic[bin_number] - 1)) / test_dic[bin_number]
-
-    # print(sphis)
-    # mean_total = np.array([mean[i][j]/frame[i][j] if frame[i][j] != 0 else 0
-    #         for i in range(len(mean)) for j in range(len(mean[0]))]).reshape((260, 346))
-    # print(mean_total[0][10])
-    # mean_normalize = normal(mean_total)
-    #
-    # s = 0
-    # while events[s][0] - events[0][0] <= 50000:
-    #     if events[s][3] == p:
-    #         sd[events[s][2]][events[s][1]] += ((ts_norm[s] - mean_total[events[s][2]][events[s][1]]) ** 2)
-    #     s += 1
-    #
-    # sd_ = [np.sqrt(sd[i][j]/(frame[i][j]-1)) if frame[i][j]-1 != 0 else 0
-    #         for i in range(len(sd)) for j in range(len(sd[0]))]
-    #
-    # # sd_normalize = normal(np.array(sd_).reshape((260, 346)))
-    # sd_normalize = normal2(np.array(sd_).reshape((260, 346)))
-    #
-    # plt.imshow(sd_normalize, cmap='gray')
-    # print(np.array(sd_normalize).reshape((260, 346))[0])
-    # plt.show()
-    #
-    # plt.imshow(mean_normalize, cmap='gray')
-    # print(mean_normalize)
-    # plt.show()
-    #
-    # plt.imshow(frame_normalize, cmap='gray')
-    # print(frame_normalize)
-    # plt.show()
+    for i in range(2):
+        ma_x, ma_y, ma_t  = [], [], []
+        for j in range(ms_i):
+            if events[j][3] == i:
+                ma_x.append(events[j][2])
+                ma_y.append(events[j][1])
+                ma_t.append(ts_norm[j])
+        X = np.stack((ma_x, ma_y, ma_t), axis=0)
+        result = np.cov(X)
+        sphis_cm[i] = result
+        sphis_ave[i][2] = np.average(ma_t)
