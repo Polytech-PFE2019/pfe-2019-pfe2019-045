@@ -75,14 +75,12 @@ if __name__ == '__main__':
     while events[ms_i][0] - time_stand <= 50000:
         if events[ms_i][3] == 1:
             fp[events[ms_i][2]][events[ms_i][1]] += 1
-            fram_p[events[ms_i][2]][events[ms_i][1]] = 1
         else:
             fn[events[ms_i][2]][events[ms_i][1]] += 1
-            fram_n[events[ms_i][2]][events[ms_i][1]] = -1
         ms_i += 1
 
-    hist_p, lbp_p =  describe(fp,8, 2)
-    hist_n, lbp_n =  describe(fn,8, 2)
+    hist_p, lbp_p =  describe(fp, 8, 2)
+    hist_n, lbp_n =  describe(fn, 8, 2)
 
     fig, axes = plt.subplots(2,2)
     axes.ravel()[0].bar(range(len(hist_p)), hist_p)

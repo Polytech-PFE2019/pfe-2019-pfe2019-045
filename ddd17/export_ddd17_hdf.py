@@ -33,8 +33,10 @@ from interfaces.caer import DVS_SHAPE, unpack_header, unpack_data
 CHUNK_SIZE = 128
 
 
+# exported_h5_path = os.path.join(
+    # os.environ["HOME"], /Volumes/SD"Downloads", "ddd17", "exported_9175.h5")
 exported_h5_path = os.path.join(
-    os.environ["HOME"], "Downloads", "ddd17", "exported.h5")
+    "/Volumes/SD", "exported_9465.h5")
 exported_data = h5py.File(exported_h5_path, "w")
 frame_data = exported_data.create_dataset(
     name="frame",

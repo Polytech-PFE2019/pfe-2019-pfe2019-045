@@ -25,7 +25,7 @@ def traverse_datasets(hdf_file):
 
 def normal(X):
     m = (X-X.min())/(X.max()-X.min())
-    return 2* m - 1
+    return 2 * m - 1
 
 def normal2(X):
     m = (X-X.min())/(X.max()-X.min())

@@ -6,13 +6,61 @@ Nous nous intéressons dans ce projet à des données issues de caméras évène
 
 Il s'agit dans ce projet de proposer une méthode permettant la segmentation d'une scène acquise avec une caméra événementielle. La segmentation consiste à partitionner la scène en régions correspondant aux différents objets ou plans de l'image. Une analyse des méthodes existantes est aussi nécessaire. En s'inspirant de l'existant, nous devons proposer et implémenter une méthode de segmentation, puis la tester sur le jeu de données DDD17. 
 
-## **Articles**
-- [x] EV-SegNet: Semantic Segmentation for Event-based Cameras
-- [x] Event-based Vision: A Survey 
-- [x] EVENT-BASED VISION ENHANCED: A JOINT DETECTION FRAMEWORK IN AUTONOMOUS DRIVING
-- [ ] introduction to spiking neural networks: information processing, learning and applications
-- [ ] End-to-End Learning of Representations for Asynchronous Event-Based Data
-- [ ] EventNet: Asynchronous Recursive Event Processing
-- [ ] Learning an event sequence embedding for dense event-based deep stereo
+
+Comme nous somme en deux, notre travail est fait ensemble hors ligne.
+
+
+## **User manual**
+If you want to directly use our dataset, please start from 6.
+1. Get the DDD17 dataset from https://docs.google.com/document/d/1HM0CSmjO8nOpUeTvmPjopcBcVCk7KXvLUuiZFS6TWSg/pub (dataset information included)
+2. Extract event camara data
+a.Environment: Python 2.7+
+b.Export only event data of a record:
+Option: -s 50%% - play file starting at 50%%
+-s 66s - play file starting at 66s
+-r (False by default), Rotate the scene 180 degrees if True, otherwise False
+To change the out file path, modify the value of exported_h5_path in line 38.
+```$ python export_ddd17_hdf.py <recorded_file.hdf5> ```
+
+
+3. Export selected sequence from the exported event file
+a. Environment: Python 3.6+
+b. Get the sequence of a record:
+To indicate the sequence, output path and the record file, please modify the corresponding value in the python file.
+```$ python data_select.py```
+
+4. Our implementation of the data representation of Ev-SegNet
+a. Environment: Python 3.6+
+b. Get the data representation of the first 50ms of a record:
+```$ python evsegnet_preprocess.py <recorded_file.hdf5> ```
+5. Our data representation
+a. Environment: Python 3.6+
+b. Get the data representation of a record:
+For 6-channel representation:
+```$ python our_data_process.py```
+For 3-channel representation:
+```$ python our_data_process_3.py```
+To indicate the output path and the record file, please modify the corresponding value in the python file.
+6. Ev-SegNet
+a. Environment: Python 2.7+ with TensorFlow ==1.11, Opencv, Keras, Imgaug and Sklearn
+b. Replicate results:
+```$ python Ev-SegNet/train_eager.py --epochs 0```
+c. Train from scratch:
+```$ python Ev-SegNet/train_eager.py --epochs 500 --dataset path_to_dataset  --model_path path_to_model  --batch_size 8```
+
+7. MobileNetV2-UNet
+a. Environment: Python 2.7+ with TensorFlow ==1.14, Opencv, Keras, Imgaug and Sklearn
+b. Replicate results:
+```$ python Ev-SegNet/train_unet.py --epochs 0```
+c. Train from scratch:
+```$ python Ev-SegNet/train_unet.py --epochs 500 --dataset path_to_dataset  --model_path path_to_model  --batch_size 8```
+
+
+
+
+
+
+---------------------
+
 
 

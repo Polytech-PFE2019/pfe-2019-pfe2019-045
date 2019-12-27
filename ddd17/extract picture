@@ -1,0 +1,11 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+if __name__ == '__main__':
+    name = '/Volumes/SD/data_our_2020/events/train/rec1487339175_export_0.npy'
+    b = np.load(name)
+    print(b.shape)
+    plt.imshow(b[:,:,2],cmap='gray')
+    # print(frame_normalize)
+    plt.show()

@@ -5,7 +5,7 @@ import pandas as pd
 import seaborn as sn
 from mpl_toolkits.mplot3d import Axes3D
 
-filename = '/Volumes/SD/exported_9175.h5'
+filename = '/Volumes/SD/exported_3224.h5'
 
 if __name__ == '__main__':
     d = h5py.File(filename, 'r')
