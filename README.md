@@ -17,7 +17,6 @@ If you want to directly use our dataset, please start from 6.
     - Environment:   
     Python 2.7+
     - Export only event data of a record:    
-    
 Option: -s 50%% - play file starting at 50%%    
 -s 66s - play file starting at 66s    
 -r (False by default), Rotate the scene 180 degrees if True, otherwise False    
